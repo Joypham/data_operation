@@ -1,4 +1,4 @@
-from google_spreadsheet_api.function import get_df_from_speadsheet, creat_new_sheet_and_update_data_from_df, get_gsheet_name
+from google_spreadsheet_api.function import creat_new_sheet_and_update_data_from_df
 from core.models.crawlingtask_action_master import V4CrawlingTaskActionMaster
 from core.crud.sql import artist, album
 import pandas as pd
@@ -7,7 +7,7 @@ from core import query_path
 from colorama import Fore, Style
 from Data_lake_process.crawlingtask import crawl_image, crawl_youtube_mp3, crawl_youtube_mp4, crawl_itunes_album
 from Data_lake_process.class_definition import WhenExist, PageType, SheetNames, merge_file, DataReports, \
-    get_key_value_from_gsheet_info, add_key_value_from_gsheet_info, get_gsheet_id_from_url
+    get_key_value_from_gsheet_info, add_key_value_from_gsheet_info
 from Data_lake_process.new_check_box_standard import youtube_check_box, s11_checkbox, update_s11_check_box, c11_checkbox, update_c11_check_box
 from Data_lake_process.data_report import update_data_reports
 from Data_lake_process.checking_accuracy_and_crawler_status import checking_image_youtube_accuracy, \
@@ -15,11 +15,9 @@ from Data_lake_process.checking_accuracy_and_crawler_status import checking_imag
 from crawl_itune.functions import get_itune_id_region_from_itune_url
 from core.crud.get_df_from_query import get_df_from_query
 from core.crud.sql.query_supporter import get_pointlogsid_valid
-from google_spreadsheet_api.function import update_value, update_value_at_last_column
+from google_spreadsheet_api.function import update_value
 from Data_lake_process.class_definition import get_gsheet_id_from_url
 from datetime import date
-
-from tools.hand_on_lab import generate_data_dict
 
 
 def upload_image_cant_crawl(checking_accuracy_result: object, sheet_name: str):

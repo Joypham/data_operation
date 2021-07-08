@@ -1,6 +1,7 @@
 
 import time
 import pandas as pd
+from scipy.stats import mode, zscore
 import numpy as np
 from scipy.stats import mode, zscore
 import matplotlib.pyplot as plt

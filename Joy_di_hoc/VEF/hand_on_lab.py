@@ -87,7 +87,7 @@ def prepare_data(df: object):
     non_numerical_data_column = df.select_dtypes(["object"]).columns
 
     df_n_missing = missing_value(df=df)
-    drop_outliner_by_zscore(df=df_n_missing,)
+    drop_outliner_by_zscore(df=df_n_missing, column_name='saleprice')
 
 
 if __name__ == "__main__":
@@ -113,7 +113,7 @@ if __name__ == "__main__":
     prepare_data(df=df)
 
     # drop outliner have abs(z-score) > 2
-    df = drop_outliner_by_zscore(df=df, column_name='saleprice')
+    # df = drop_outliner_by_zscore(df=df, column_name='saleprice')
 
     # remove variables have highly corr
     # bỏ biến phụ thuộc (saleprice: vì mình đang dự đoán biến này)
