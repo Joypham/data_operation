@@ -118,7 +118,7 @@ if __name__ == "__main__":
     # remove variables have highly corr
     # bỏ biến phụ thuộc (saleprice: vì mình đang dự đoán biến này)
     # df = df.drop(columns=['z_column_name'])
-    # corr_matrix = df.corr().abs()
+    corr_matrix = df.corr().abs()
     # # bỏ đi phần đường chéo đối xứng
     # upper = corr_matrix.where(np.triu(np.ones(corr_matrix.shape), k=1).astype(np.bool))
     # # lấy ra column có corr > 0.8
