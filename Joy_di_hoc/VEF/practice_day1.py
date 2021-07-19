@@ -333,20 +333,20 @@ if __name__ == "__main__":
 
     # CACH 2: CLASSIFICATION VOI sklearn bang randomforest
 
-    # X_train = df_train.drop(columns='churn')
-    # y_train = df_train.churn
-    #
-    # X_test = df_test.drop(columns='churn')
-    # y_test = df_test.churn
-    # # Creat gridsearch
-    # params = {
-    #     'n_estimators': [50, 200, 300, 500, 700],
-    #     'max_depth': [None],
-    #     'min_samples_split': [2, 5, 10]
-    # }
-    #
-    # rf = RandomForestClassifier()
-    # rf.fit(X_train, y_train)
+    X_train = df_train.drop(columns='churn')
+    y_train = df_train.churn
+
+    X_test = df_test.drop(columns='churn')
+    y_test = df_test.churn
+    # Creat gridsearch
+    params = {
+        'n_estimators': [50, 200, 300, 500, 700],
+        'max_depth': [None],
+        'min_samples_split': [2, 5, 10]
+    }
+
+    rf = RandomForestClassifier()
+    rf.fit(X_train, y_train)
     # pred_proba = rf.predict_proba(X_test)[:, 1]
     # pred_label = rf.predict(X_test)
     # df_test_predict = df_test.reset_index()[['account_length', 'churn']]
@@ -354,30 +354,53 @@ if __name__ == "__main__":
     # df_test_predict['predict_label'] = pred_label
     # print(df_test_predict)
     # print(test_result[['account_length', 'churn', 0]])
-
+    #
     # print('Accuracy:', accuracy_score(df_test.churn, pred_label))
     # print('Precision:', precision_score(df_test.churn, pred_label))
     # print('Recall:', recall_score(df_test.churn, pred_label))
     # print('F1-score:', f1_score(df_test.churn, pred_label))
     # print('AUC:', roc_auc_score(df_test.churn, pred_label))
-    #
-    # grid = GridSearchCV(rf, param_grid=params)
-    # grid.fit(X=X_train, y=y_train)
-    # k = grid.best_params_
-    # print(k)
-    # best_rf = grid.best_estimator_
-    # best_rf.fit(X_train, y_train)
-    # best_pred_label = best_rf.predict(X_test)
 
-    # print('Accuracy:', accuracy_score(df_test.churn, best_pred_label))
-    # print('Precision:', precision_score(df_test.churn, best_pred_label))
-    # print('Recall:', recall_score(df_test.churn, best_pred_label))
-    # print('F1-score:', f1_score(df_test.churn, best_pred_label))
-    # print('AUC:', roc_auc_score(df_test.churn, best_pred_label))
+    grid = GridSearchCV(rf, param_grid=params)
+    grid.fit(X=X_train, y=y_train)
+    k = grid.best_params_
+    print(k)
+    best_rf = grid.best_estimator_
+    best_rf.fit(X_train, y_train)
+    best_pred_label = best_rf.predict(X_test)
+
+    print('Accuracy:', accuracy_score(df_test.churn, best_pred_label))
+    print('Precision:', precision_score(df_test.churn, best_pred_label))
+    print('Recall:', recall_score(df_test.churn, best_pred_label))
+    print('F1-score:', f1_score(df_test.churn, best_pred_label))
+    print('AUC:', roc_auc_score(df_test.churn, best_pred_label))
 
     # CLASSIFICATION
     # CACH 3: CLASSIFICATION VOI xgboost
-    X_train = df_train.drop(columns='churn')
-    y_train = df_train.churn
+    # X_train = df_train.drop(columns='churn')
+    # y_train = df_train.churn
+    # X_test = df_test.drop(columns='churn')
+    # y_test = df_test.churn
+
+    xg_reg = xgb.XGBClassifier()
+    xg_reg.fit(y=y_train, X=X_train)
+
+    # y_test_pred = xg_reg.predict(X_test)
+    pred_proba = xg_reg.predict_proba(X_test)[:, 1]
+    pred_label = xg_reg.predict(X_test)
+    df_test_predict = df_test.reset_index()[['account_length', 'churn']]
+    df_test_predict['predict_proba'] = pred_proba
+    df_test_predict['predict_label'] = pred_label
+
+    # print(df_test_predict)
+
+    print('Accuracy xgboost:', accuracy_score(df_test.churn, pred_label))
+    print('Precision xgboost:', precision_score(df_test.churn, pred_label))
+    print('Recall xgboost:', recall_score(df_test.churn, pred_label))
+    print('F1-score xgboost:', f1_score(df_test.churn, pred_label))
+    print('AUC xgboost:', roc_auc_score(df_test.churn, pred_label))
+
+
+
 
     print("\n --- total time to process %s seconds ---" % (time.time() - start_time))
