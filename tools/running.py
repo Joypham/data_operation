@@ -62,8 +62,8 @@ if __name__ == "__main__":
     df["DurationMs"].replace({"": "0"}, inplace=True)
     df = df.loc[8148:9000]
     row_index = df.index
-    start = row_index.start
-    stop = row_index.stop
+    start = row_index.n_estimators_start
+    stop = row_index.n_estimators_stop
     step = 25
     for i in range(start, stop, step):
         x = i + step

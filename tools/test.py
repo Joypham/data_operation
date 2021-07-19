@@ -40,7 +40,7 @@ def upload_image_cant_crawl(checking_accuracy_result: object, sheet_name: str):
     for gsheet_info in gsheet_infos:
         url = get_key_value_from_gsheet_info(gsheet_info=gsheet_info, key='url')
         df_incomplete_to_upload = df_incomplete[df_incomplete['url'] == url].reset_index()
-        count_incomplete = df_incomplete_to_upload.index.stop
+        count_incomplete = df_incomplete_to_upload.index.n_estimators_stop
         joy = df_incomplete_to_upload['status'].tolist() == []
 
         if joy:

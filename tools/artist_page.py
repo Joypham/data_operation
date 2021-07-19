@@ -450,8 +450,8 @@ def update_similarity(urls: list, sheet_name: str, start_row: int, stop_row: int
     df["DurationMs"].replace({"": "0"}, inplace=True)
     df = df.loc[start_row:stop_row]
     row_index = df.index
-    start = row_index.start
-    stop = row_index.stop
+    start = row_index.n_estimators_start
+    stop = row_index.n_estimators_stop
     step = 25
     for i in range(start, stop, step):
         x = i + step

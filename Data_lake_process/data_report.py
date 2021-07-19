@@ -20,7 +20,7 @@ def update_data_reports(gsheet_info: object, status: str = None, count_complete:
             range_to_update = f"demo!A{i + 2}"
             break
         else:
-            range_to_update = f"demo!A{row_index.stop + 2}"
+            range_to_update = f"demo!A{row_index.n_estimators_stop + 2}"
     list_result = [
         [gsheet_name, gsheet_url, sheet_name, f"{datetime.now()}", status, count_complete, count_incomlete, notice]]
     update_value(list_result=list_result, grid_range_to_update=range_to_update,
