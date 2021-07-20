@@ -305,8 +305,24 @@ if __name__ == "__main__":
 
     features_variable = sorted_fi['names'].values.tolist()
     features_variable.append('saleprice')
-    print(features_variable)
-    linear_regression_ols_logit(linear_regression=True, df=df_train[features_variable], dependent_variable='saleprice')
+    olsres = linear_regression_ols_logit(linear_regression=True, df=df_train[features_variable], dependent_variable='saleprice')
+
+    pred_y = olsres.predict(df_test[features_variable])
+
+    df_test_predict = df_test.copy()
+    df_test_predict['predict_y'] = pred_y
+    df_test_predict = df_test_predict[['saleprice', 'predict_y']].sort_values(by=['saleprice', 'predict_y'],ascending=True, ignore_index = True)
+    df_test_predict['predict_y'] = df_test_predict.apply(
+            lambda x: int(x['predict_y']), axis=1)
+    # print(df_test_predict)
+    df_test_predict.plot.line()
+    plt.show()
+
+    # print(lines)
+
+
+
+    # print(df_test_predict[['saleprice', 'predict_y']])
 
     # Linear regression by stepwise algorithms
     # forward_selected(df=df, dependent_variable='saleprice')
