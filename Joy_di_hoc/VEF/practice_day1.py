@@ -80,10 +80,10 @@ def handle_missing_value(df: object):
             - non_numerical_column: mode, other level ,build predict model 
     '''
     # fill NA numerical_column by mean
-    # df[numerical_data_column] = df[numerical_data_column].fillna(df[numerical_data_column].mean())
+    df[numerical_data_column] = df[numerical_data_column].fillna(df[numerical_data_column].mean())
 
     # fill NA numerical_column by median:
-    df[numerical_data_column] = df[numerical_data_column].fillna(df[numerical_data_column].median())
+    # df[numerical_data_column] = df[numerical_data_column].fillna(df[numerical_data_column].median())
 
     # fill NA non_numerical_column by mode:
     # for column_name in non_numerical_data_column:
@@ -98,13 +98,13 @@ def drop_outliner_by_zscore(df: object, dependent_variable: str):
     '''
        z-socre: tính khoảng cách từ 1 điểm đến điểm trung bình có hiệu chỉnh theo std
     '''
-    # z_column_name = zscore(df[dependent_variable])
+    z_column_name = zscore(df[dependent_variable])
 
-    # df['z_column_name'] = z_column_name
-    # df_outliner = df[((df.z_column_name > 2) | (df.z_column_name < -2))]
-    # print('The number of outliers:', len(df_outliner.index))
-    # index_outliner = df_outliner.index
-    # df = df.drop(index_outliner)
+    df['z_column_name'] = z_column_name
+    df_outliner = df[((df.z_column_name > 2) | (df.z_column_name < -2))]
+    print('The number of outliers:', len(df_outliner.index))
+    index_outliner = df_outliner.index
+    df = df.drop(index_outliner)
     return df
 
 
@@ -174,18 +174,14 @@ def prepare_data(url: str, dependent_variable: str):
         pass
 
     # Step 5: removing highly correlated variable
-    # df = df.drop(columns=['z_column_name', 'id'])
-    df = df.drop(columns=[dependent_variable])
+    df = df.drop(columns=['z_column_name', 'id'])
+    # df = df.drop(columns=[dependent_variable])
     df = simple_correlated_detection(df=df)
-
     # # Step 6: one hot coding: drop_first = True để bỏ đi 1 biến khi thực hiện one hot coding
-
     df = pd.get_dummies(df, drop_first=True)
-    #
     # # Step 6: reformat_file
     df = re_format_file(df=df)
     print('Original data shape:', original_df(url=url).shape, '\nFinal data shape:', df.shape)
-
     return df
 
 
@@ -295,21 +291,22 @@ def forward_selected(df: object, dependent_variable: str):
 if __name__ == "__main__":
     start_time = time.time()
     pd.set_option("display.max_rows", None, "display.max_columns", 30, 'display.width', 500)
-    # url = "https://raw.githubusercontent.com/tiwari91/Housing-Prices/master/train.csv"
-    url = "https://github.com/pnhuy/datasets/raw/master/Churn.xls"
-    df = prepare_data(url=url, dependent_variable='phone')
+    url = "https://raw.githubusercontent.com/tiwari91/Housing-Prices/master/train.csv"
+    # url = "https://github.com/pnhuy/datasets/raw/master/Churn.xls"
+    df = prepare_data(url=url, dependent_variable='saleprice')
     df_train, df_test = train_test_split(df, test_size=0.3)
-    # print(df_test.columns)
 
-    # linear_regression_ols_logit(df=df)
+    # linear_regression_ols_logit(df=df_train, dependent_variable='saleprice', linear_regression=True)
 
     # Linear regression by randomforest
     # Step 1: feature_selection
-    # sorted_fi = feature_selection_randomforest(linear_regression=True, df=df, n_top_highest_feature_importance=20)
-    # features_variable = sorted_fi['names'].values.tolist()
-    # features_variable.append('saleprice')
-    # print(features_variable)
-    # linear_regression_ols(df=df[features_variable])
+    sorted_fi = feature_selection_randomforest(linear_regression=True, df=df_train, n_top_highest_feature_importance=20,
+                                               dependent_variable='saleprice')
+
+    features_variable = sorted_fi['names'].values.tolist()
+    features_variable.append('saleprice')
+    print(features_variable)
+    linear_regression_ols_logit(linear_regression=True, df=df_train[features_variable], dependent_variable='saleprice')
 
     # Linear regression by stepwise algorithms
     # forward_selected(df=df, dependent_variable='saleprice')
@@ -333,20 +330,20 @@ if __name__ == "__main__":
 
     # CACH 2: CLASSIFICATION VOI sklearn bang randomforest
 
-    X_train = df_train.drop(columns='churn')
-    y_train = df_train.churn
-
-    X_test = df_test.drop(columns='churn')
-    y_test = df_test.churn
-    # Creat gridsearch
-    params = {
-        'n_estimators': [50, 200, 300, 500, 700],
-        'max_depth': [None],
-        'min_samples_split': [2, 5, 10]
-    }
-
-    rf = RandomForestClassifier()
-    rf.fit(X_train, y_train)
+    # X_train = df_train.drop(columns='churn')
+    # y_train = df_train.churn
+    #
+    # X_test = df_test.drop(columns='churn')
+    # y_test = df_test.churn
+    # # Creat gridsearch
+    # params = {
+    #     'n_estimators': [50, 200, 300, 500, 700],
+    #     'max_depth': [None],
+    #     'min_samples_split': [2, 5, 10]
+    # }
+    #
+    # rf = RandomForestClassifier()
+    # rf.fit(X_train, y_train)
     # pred_proba = rf.predict_proba(X_test)[:, 1]
     # pred_label = rf.predict(X_test)
     # df_test_predict = df_test.reset_index()[['account_length', 'churn']]
@@ -361,19 +358,19 @@ if __name__ == "__main__":
     # print('F1-score:', f1_score(df_test.churn, pred_label))
     # print('AUC:', roc_auc_score(df_test.churn, pred_label))
 
-    grid = GridSearchCV(rf, param_grid=params)
-    grid.fit(X=X_train, y=y_train)
-    k = grid.best_params_
-    print(k)
-    best_rf = grid.best_estimator_
-    best_rf.fit(X_train, y_train)
-    best_pred_label = best_rf.predict(X_test)
-
-    print('Accuracy:', accuracy_score(df_test.churn, best_pred_label))
-    print('Precision:', precision_score(df_test.churn, best_pred_label))
-    print('Recall:', recall_score(df_test.churn, best_pred_label))
-    print('F1-score:', f1_score(df_test.churn, best_pred_label))
-    print('AUC:', roc_auc_score(df_test.churn, best_pred_label))
+    # grid = GridSearchCV(rf, param_grid=params)
+    # grid.fit(X=X_train, y=y_train)
+    # k = grid.best_params_
+    # print(k)
+    # best_rf = grid.best_estimator_
+    # best_rf.fit(X_train, y_train)
+    # best_pred_label = best_rf.predict(X_test)
+    #
+    # print('Accuracy:', accuracy_score(df_test.churn, best_pred_label))
+    # print('Precision:', precision_score(df_test.churn, best_pred_label))
+    # print('Recall:', recall_score(df_test.churn, best_pred_label))
+    # print('F1-score:', f1_score(df_test.churn, best_pred_label))
+    # print('AUC:', roc_auc_score(df_test.churn, best_pred_label))
 
     # CLASSIFICATION
     # CACH 3: CLASSIFICATION VOI xgboost
@@ -382,25 +379,22 @@ if __name__ == "__main__":
     # X_test = df_test.drop(columns='churn')
     # y_test = df_test.churn
 
-    xg_reg = xgb.XGBClassifier()
-    xg_reg.fit(y=y_train, X=X_train)
+    # xg_reg = xgb.XGBClassifier()
+    # xg_reg.fit(y=y_train, X=X_train)
 
     # y_test_pred = xg_reg.predict(X_test)
-    pred_proba = xg_reg.predict_proba(X_test)[:, 1]
-    pred_label = xg_reg.predict(X_test)
-    df_test_predict = df_test.reset_index()[['account_length', 'churn']]
-    df_test_predict['predict_proba'] = pred_proba
-    df_test_predict['predict_label'] = pred_label
+    # pred_proba = xg_reg.predict_proba(X_test)[:, 1]
+    # pred_label = xg_reg.predict(X_test)
+    # df_test_predict = df_test.reset_index()[['account_length', 'churn']]
+    # df_test_predict['predict_proba'] = pred_proba
+    # df_test_predict['predict_label'] = pred_label
 
     # print(df_test_predict)
 
-    print('Accuracy xgboost:', accuracy_score(df_test.churn, pred_label))
-    print('Precision xgboost:', precision_score(df_test.churn, pred_label))
-    print('Recall xgboost:', recall_score(df_test.churn, pred_label))
-    print('F1-score xgboost:', f1_score(df_test.churn, pred_label))
-    print('AUC xgboost:', roc_auc_score(df_test.churn, pred_label))
-
-
-
+    # print('Accuracy xgboost:', accuracy_score(df_test.churn, pred_label))
+    # print('Precision xgboost:', precision_score(df_test.churn, pred_label))
+    # print('Recall xgboost:', recall_score(df_test.churn, pred_label))
+    # print('F1-score xgboost:', f1_score(df_test.churn, pred_label))
+    # print('AUC xgboost:', roc_auc_score(df_test.churn, pred_label))
 
     print("\n --- total time to process %s seconds ---" % (time.time() - start_time))
