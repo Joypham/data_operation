@@ -22,7 +22,7 @@ def original_df(url: str):
     if ".xls" in url:
         df = pd.read_excel(url)
     else:
-        df = pd.read_csv(url)
+        df = pd.read_csv(url, sep=";")
     # reformat_column name: lowercase entire column name (statmodel ko doc duoc column name trong 1 so truong hop)
 
     lower_names = [name.lower() for name in df.columns]
@@ -155,9 +155,10 @@ def simple_correlated_detection(df):
     return df
 
 
-def prepare_data(url: str, dependent_variable: str):
+def prepare_data(original_df: object, dependent_variable: str):
     # Step 1: reformat and read file
-    df = original_df(url=url)
+    # df = original_df(url=url)
+    df = original_df
 
     # Step 2: observe data dict
     # generate_data_dict(df=df)
@@ -166,22 +167,24 @@ def prepare_data(url: str, dependent_variable: str):
     df = handle_missing_value(df=df)
 
     # Step 4: handle outliner (chú ý: drop outliner by z-score or drop outliner by iqr in case type = int)
+
     column_int_type = df.select_dtypes(["number"]).columns
     if dependent_variable in column_int_type:
-        drop_outliner_by_zscore(df=df, dependent_variable=dependent_variable)
+        df = drop_outliner_by_zscore(df=df, dependent_variable=dependent_variable)
         # df = drop_outliner_by_iqr(df=df)
     else:
         pass
 
     # Step 5: removing highly correlated variable
-    df = df.drop(columns=['z_column_name', 'id'])
+    df = df.drop(columns=['z_column_name'])
     # df = df.drop(columns=[dependent_variable])
-    df = simple_correlated_detection(df=df)
-    # # Step 6: one hot coding: drop_first = True để bỏ đi 1 biến khi thực hiện one hot coding
+    # df = simple_correlated_detection(df=df)
+    # Step 6: one hot coding: drop_first = True để bỏ đi 1 biến khi thực hiện one hot coding
+
     df = pd.get_dummies(df, drop_first=True)
     # # Step 6: reformat_file
     df = re_format_file(df=df)
-    print('Original data shape:', original_df(url=url).shape, '\nFinal data shape:', df.shape)
+    print('Original data shape:', original_df.shape, '\nFinal data shape:', df.shape)
     return df
 
 
@@ -214,6 +217,7 @@ def linear_regression_ols_logit(linear_regression: bool, df: object, dependent_v
             result_pvalue = smf.logit(f"{dependent_variable} ~ {ols_features_pvalue}", data=df).fit()
         print(result_pvalue.summary())
         return result_pvalue
+
 
 def feature_selection_randomforest(linear_regression: bool, df: object, dependent_variable: str,
                                    n_top_highest_feature_importance: int = None):
@@ -288,6 +292,10 @@ def forward_selected(df: object, dependent_variable: str):
     return model
 
 
+# def linear_regression_diagnostics():
+#     print('joy xinh')
+
+
 if __name__ == "__main__":
     start_time = time.time()
     pd.set_option("display.max_rows", None, "display.max_columns", 30, 'display.width', 500)
@@ -305,27 +313,53 @@ if __name__ == "__main__":
 
     features_variable = sorted_fi['names'].values.tolist()
     features_variable.append('saleprice')
-    olsres = linear_regression_ols_logit(linear_regression=True, df=df_train[features_variable], dependent_variable='saleprice')
-
-    pred_y = olsres.predict(df_test[features_variable])
-
-    df_test_predict = df_test.copy()
-    df_test_predict['predict_y'] = pred_y
-    df_test_predict = df_test_predict[['saleprice', 'predict_y']].sort_values(by=['saleprice', 'predict_y'],ascending=True, ignore_index = True)
-    df_test_predict['predict_y'] = df_test_predict.apply(
-            lambda x: int(x['predict_y']), axis=1)
-    # print(df_test_predict)
-    df_test_predict.plot.line()
-    plt.show()
-
-    # print(lines)
-
-
-
-    # print(df_test_predict[['saleprice', 'predict_y']])
+    olsres = linear_regression_ols_logit(linear_regression=True, df=df_train[features_variable], dependent_variable='saleprice', p_value=0.05)
 
     # Linear regression by stepwise algorithms
     # forward_selected(df=df, dependent_variable='saleprice')
+
+    # REGRESSION PREDICT
+    # pred_y = olsres.predict(df_test[features_variable])
+    # df_test_predict = df_test.copy()
+    # df_test_predict['predict_y'] = pred_y
+    # df_test_predict = df_test_predict[['saleprice', 'predict_y']].sort_values(by=['saleprice', 'predict_y'],ascending=True, ignore_index = True)
+    # df_test_predict['predict_y'] = df_test_predict.apply(
+    #         lambda x: int(x['predict_y']), axis=1)
+    # # print(df_test_predict)
+    # df_test_predict.plot.line()
+    # plt.show()
+
+    # REGRESSION DIAGNOSTIC
+    # from statsmodels.graphics.regressionplots import plot_leverage_resid2
+    # fig, ax = plt.subplots(figsize=(8, 6))
+    # fig = plot_leverage_resid2(olsres, ax=ax)
+    # plt.show()
+
+    # 1. Heteroscedasticity Tests
+    from statsmodels.stats.diagnostic import het_breuschpagan, het_white, acorr_breusch_godfrey
+    import statsmodels.stats.api as sms
+
+    from statsmodels.stats.outliers_influence import variance_inflation_factor
+
+    # statsmodels.stats.outliers_influence.variance_inflation_factor
+
+    breuschpagan = het_breuschpagan(resid=olsres.resid, exog_het=olsres.model.exog)
+    # het_breuschpagan: return (lm, lm_pvalue, fvalue, f_pvalue)
+    # white = het_white(resid=olsres.resid, exog=olsres.model.exog)
+    print("Heteroscedasticity_breuschpagan: return (lm, lm_pvalue, fvalue, f_pvalue)", breuschpagan)
+    # print("Heteroscedasticity_white: return (lm, lm_pvalue, fvalue, f_pvalue)", white)
+
+    # 2. Autocorrelation Tests
+    breusch_godfrey = acorr_breusch_godfrey(res=olsres)
+    print("Autocorrelation_breusch_godfrey: return (lm, lm_pvalue, fvalue, f_pvalue)", breusch_godfrey)
+    # 3. normal distribution residual
+    # name = ['Jarque-Bera', 'Jarque-Bera_pvalue', 'Skew', 'Kurtosis']
+    jarque_bera = sms.jarque_bera(olsres.resid)
+    omni_normtest = sms.omni_normtest(olsres.resid)
+    print("normal distribution residual jarque_bera: return ('Jarque-Bera', 'Jarque-Bera_pvalue', 'Skew', 'Kurtosis') ", jarque_bera)
+    print("normal distribution residual omni_normtest: ", omni_normtest)
+
+    # 4. Multicollinearity Tests
 
     # CLASSIFICATION
     # CACH 1: CLASSIFICATION VOI statmodel bang thuat toan MLE(Maximum Likelyhood Estimation)
