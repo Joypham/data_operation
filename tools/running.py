@@ -81,5 +81,4 @@ if __name__ == "__main__":
             f.append([k])
         joy1 = f"{sheet_name}!N{i+2}"
         update_value(list_result=f, grid_range_to_update=joy1, gsheet_id=gsheet_id)
-
     print("--- %s seconds ---" % (time.time() - start_time))

@@ -287,9 +287,9 @@ if __name__ == "__main__":
     for i in row_num:
         query = filter_df['crawling_task'].loc[i]
         print(query)
-    #     # conten_type = filter_df['Content type'].loc[i]
-    #     # conten_type = filter_df['Content type'].loc[i]
-    #     # conten_type = filter_df['Content type'].loc[i]
-    #     print(conten_type)
+        # # conten_type = filter_df['Content type'].loc[i]
+        # # conten_type = filter_df['Content type'].loc[i]
+        # # conten_type = filter_df['Content type'].loc[i]
+        # print(conten_type)
 
     print("\n --- total time to process %s seconds ---" % (time.time() - start_time))

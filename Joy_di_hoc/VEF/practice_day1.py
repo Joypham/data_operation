@@ -22,7 +22,7 @@ def original_df(url: str):
     if ".xls" in url:
         df = pd.read_excel(url)
     else:
-        df = pd.read_csv(url, sep=";")
+        df = pd.read_csv(url, sep=",")
     # reformat_column name: lowercase entire column name (statmodel ko doc duoc column name trong 1 so truong hop)
 
     lower_names = [name.lower() for name in df.columns]
@@ -32,12 +32,17 @@ def original_df(url: str):
 
 def generate_data_dict(df: object):
     mean = df.mean(axis=0)
+    min_value = df.min(axis=0, numeric_only=True)
+    max_value = df.max(axis=0, numeric_only=True)
     median = df.median()
     std = df.std()
     result1 = {
         "mean": mean,
         "median": median,
         "std": std,
+        "min_value": min_value,
+        "max_value": max_value
+
     }
     data_dict_1 = pd.DataFrame(result1).reset_index()
 
@@ -60,11 +65,11 @@ def generate_data_dict(df: object):
     data_dict_merge.columns = data_dict_merge.columns.str.replace('index', 'column_name')
 
     # Write in gsheet
-    # creat_new_sheet_and_update_data_from_df(df=data_dict_merge,
-    #                                         gsheet_id="1cZw8dBSCJF1ylVakiqC5oKHIaEvuPV6zid2ct07Bo4k",
-    #                                         new_sheet_name="data dict")
-    # url = "https://docs.google.com/spreadsheets/d/1cZw8dBSCJF1ylVakiqC5oKHIaEvuPV6zid2ct07Bo4k"
-    # print(url, "\n\n", data_dict_merge)
+    creat_new_sheet_and_update_data_from_df(df=data_dict_merge,
+                                            gsheet_id="1cZw8dBSCJF1ylVakiqC5oKHIaEvuPV6zid2ct07Bo4k",
+                                            new_sheet_name="data dict")
+    url = "https://docs.google.com/spreadsheets/d/1cZw8dBSCJF1ylVakiqC5oKHIaEvuPV6zid2ct07Bo4k"
+    print(url, "\n\n", data_dict_merge)
     return data_dict_merge
 
 
@@ -300,23 +305,31 @@ if __name__ == "__main__":
     start_time = time.time()
     pd.set_option("display.max_rows", None, "display.max_columns", 30, 'display.width', 500)
     url = "https://raw.githubusercontent.com/tiwari91/Housing-Prices/master/train.csv"
+    # https://raw.githubusercontent.com/tiwari91/Housing-Prices/master/train.csv
     # url = "https://github.com/pnhuy/datasets/raw/master/Churn.xls"
-    df = prepare_data(url=url, dependent_variable='saleprice')
-    df_train, df_test = train_test_split(df, test_size=0.3)
+    original_df = original_df(url=url)
+    original_df['price_per_square_foot'] = original_df.apply(lambda x: x['saleprice'] / x['lotarea'], axis=1)
+    data_dict = generate_data_dict(df=original_df)
+
+    df = prepare_data(original_df=df, dependent_variable='saleprice')
+    #
+    # df_train, df_test = train_test_split(df, test_size=0.3)
 
     # linear_regression_ols_logit(df=df_train, dependent_variable='saleprice', linear_regression=True)
 
     # Linear regression by randomforest
     # Step 1: feature_selection
-    sorted_fi = feature_selection_randomforest(linear_regression=True, df=df_train, n_top_highest_feature_importance=20,
-                                               dependent_variable='saleprice')
-
-    features_variable = sorted_fi['names'].values.tolist()
-    features_variable.append('saleprice')
-    olsres = linear_regression_ols_logit(linear_regression=True, df=df_train[features_variable], dependent_variable='saleprice', p_value=0.05)
+    # sorted_fi = feature_selection_randomforest(linear_regression=True, df=df_train, n_top_highest_feature_importance=20,
+    #                                            dependent_variable='saleprice')
+    #
+    # features_variable = sorted_fi['names'].values.tolist()
+    # features_variable.append('saleprice')
+    # k = df_train[features_variable].copy().reset_index(drop=True)
+    #
+    # olsres = linear_regression_ols_logit(linear_regression=True, df=k, dependent_variable='saleprice')
 
     # Linear regression by stepwise algorithms
-    # forward_selected(df=df, dependent_variable='saleprice')
+    # forward_selected(df=df_train[features_variable], dependent_variable='saleprice')
 
     # REGRESSION PREDICT
     # pred_y = olsres.predict(df_test[features_variable])
@@ -341,23 +354,21 @@ if __name__ == "__main__":
 
     from statsmodels.stats.outliers_influence import variance_inflation_factor
 
-    # statsmodels.stats.outliers_influence.variance_inflation_factor
-
-    breuschpagan = het_breuschpagan(resid=olsres.resid, exog_het=olsres.model.exog)
-    # het_breuschpagan: return (lm, lm_pvalue, fvalue, f_pvalue)
+    # breuschpagan = het_breuschpagan(resid=olsres.resid, exog_het=olsres.model.exog)
+    # # het_breuschpagan: return (lm, lm_pvalue, fvalue, f_pvalue)
     # white = het_white(resid=olsres.resid, exog=olsres.model.exog)
-    print("Heteroscedasticity_breuschpagan: return (lm, lm_pvalue, fvalue, f_pvalue)", breuschpagan)
+    # print("Heteroscedasticity_breuschpagan: return (lm, lm_pvalue, fvalue, f_pvalue)", breuschpagan)
     # print("Heteroscedasticity_white: return (lm, lm_pvalue, fvalue, f_pvalue)", white)
 
     # 2. Autocorrelation Tests
-    breusch_godfrey = acorr_breusch_godfrey(res=olsres)
-    print("Autocorrelation_breusch_godfrey: return (lm, lm_pvalue, fvalue, f_pvalue)", breusch_godfrey)
+    # breusch_godfrey = acorr_breusch_godfrey(res=olsres)
+    # print("Autocorrelation_breusch_godfrey: return (lm, lm_pvalue, fvalue, f_pvalue)", breusch_godfrey)
     # 3. normal distribution residual
     # name = ['Jarque-Bera', 'Jarque-Bera_pvalue', 'Skew', 'Kurtosis']
-    jarque_bera = sms.jarque_bera(olsres.resid)
-    omni_normtest = sms.omni_normtest(olsres.resid)
-    print("normal distribution residual jarque_bera: return ('Jarque-Bera', 'Jarque-Bera_pvalue', 'Skew', 'Kurtosis') ", jarque_bera)
-    print("normal distribution residual omni_normtest: ", omni_normtest)
+    # jarque_bera = sms.jarque_bera(olsres.resid)
+    # omni_normtest = sms.omni_normtest(olsres.resid)
+    # print("normal distribution residual jarque_bera: return ('Jarque-Bera', 'Jarque-Bera_pvalue', 'Skew', 'Kurtosis') ", jarque_bera)
+    # print("normal distribution residual omni_normtest: ", omni_normtest)
 
     # 4. Multicollinearity Tests
 

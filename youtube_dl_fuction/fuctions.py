@@ -21,7 +21,8 @@ def get_raw_youtube_info(youtube_url: str):
 
     result = ydl.extract_info(
         youtube_url,
-        download=False  # We just want to extract the info
+        # download=False  # We just want to extract the info
+        download = True  # We just want to extract the info
     )
     joy = json.dumps(result)
     print(joy)
@@ -78,13 +79,15 @@ def get_youtube_title_and_youtube_uploader_from_youtube_url(youtube_url: str):
 if __name__ == "__main__":
     start_time = time.time()
     youtube_urls = [
-        "https://www.youtube.com/watch?v=3tb-TQNeocY"
+        "https://www.youtube.com/watch?v=S5sglWkx064",
+        "https://www.youtube.com/watch?v=K4ASDUU9CcA"
     ]
     for youtube_url in youtube_urls:
         print(youtube_url)
+        get_raw_youtube_info(youtube_url=youtube_url)
         # get_youtube_title_and_youtube_uploader_from_youtube_url(youtube_url)
-        joy = get_raw_title_uploader_from_youtube_url(youtube_url)
-        print(joy)
+        # joy = get_raw_title_uploader_from_youtube_url(youtube_url)
+        # print(joy)
     t2 = time.time() - start_time
     print(t2)
 
