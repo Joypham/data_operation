@@ -36,7 +36,6 @@ def check_validate_itune(itune_album_id: str, itune_region: str = "us"):
         return True
     else:
         #   Step 2: check web url
-
         web_url = f"https://music.apple.com/{itune_region}/album/{itune_album_id}"
         web_response = requests.get(web_url)
         if web_response:

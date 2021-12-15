@@ -10,7 +10,7 @@ from statsmodels.tsa.stattools import adfuller
 from statsmodels.tsa.seasonal import seasonal_decompose
 from statsmodels.tsa.ar_model import AR
 from statsmodels.tsa.arima_model import ARMA, ARIMA
-from Joy_di_hoc.VEF.practice_day1 import prepare_data
+from joy_di_hoc.VEF.practice_day1 import prepare_data
 
 if __name__ == "__main__":
     start_time = time.time()

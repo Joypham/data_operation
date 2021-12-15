@@ -3,7 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import time
 from sklearn.cluster import KMeans
-from Joy_di_hoc.VEF.practice_day1 import prepare_data
+from joy_di_hoc.VEF.practice_day1 import prepare_data
 
 if __name__ == "__main__":
     start_time = time.time()
