@@ -16,6 +16,10 @@ class absenteeism_model():
             self.reg = pickle.load(model_file)
             self.scaler = pickle.load(scaler_file)
             self.data = None
+            self.targets = None
+            self.original_df = None
+            self.features = None
+            self.preprocessed_data = None
 
     def load_and_clean_data(self, data_file):
         self.original_df = read_data(path_name=data_file)
@@ -47,20 +51,20 @@ class absenteeism_model():
         self.data = absenteeism_scaler.transform(self.features)
 
     def predicted_probability(self):
-        if (self.data is not None):
+        if self.data is not None:
             pred = self.reg.predict_proba(self.data)[:, 1]
             return pred
 
     # a function which outputs 0 or 1 based on our model
     def predicted_output_category(self):
-        if (self.data is not None):
+        if self.data is not None:
             pred_outputs = self.reg.predict(self.data)
             return pred_outputs
 
     # predict the outputs and the probabilities and
     # add columns with these values at the end of the new data
     def predicted_outputs(self):
-        if (self.data is not None):
+        if self.data is not None:
             self.preprocessed_data['Probability'] = self.reg.predict_proba(self.data)[:, 1]
             self.preprocessed_data['Prediction'] = self.reg.predict(self.data)
             return self.preprocessed_data
@@ -77,60 +81,6 @@ if __name__ == "__main__":
         model_file='/Users/phamhanh/PycharmProjects/data_operation/joy_di_hoc/udemy_intergrating_python_sql_tableau/absenteeism_model',
         scaler_file='/Users/phamhanh/PycharmProjects/data_operation/joy_di_hoc/udemy_intergrating_python_sql_tableau/absenteeism_scaler')
     model.load_and_clean_data(data_file=data_file_name)
-    joy = model.predicted_outputs()
-
-
-
-
-
-
-
-
-
-    # Step 1: read and re_format file
-    # original_df = read_data(path_name=data_file_name)
-    # re_format_file(df=original_df)
-    # step 6: Train/test split
-    # x_train, x_test, y_train, y_test = train_test_split(scaled_inputs, targets, train_size=0.8, shuffle=True,
-    #                                                     random_state=20)
-    # # Step 7: modeling
-    # reg = LogisticRegression()
-    # reg.fit(x_train, y_train)
-    # # accuracy unscale: 70%, accuracy scaled: 78%
-    # accuracy_score = reg.score(x_train, y_train)
-    # print("accuracy_score: ", accuracy_score)
-    #
-    # # Extract intercept and coefficients
-    # intercept = reg.intercept_
-    # coef = reg.coef_[0]
-    # feature_name = scaled_inputs.columns.values
-    #
-    # summary_table = pd.DataFrame(
-    #     {
-    #         'column_name': np.append(['intercept'], feature_name),
-    #         'coefficient': np.append(intercept, coef)
-    #     }
-    # )
-    #
-    # summary_table['odds_ratio'] = np.exp(summary_table.coefficient)
-    # summary_table.sort_values('odds_ratio', ascending=False)
-    # print(summary_table)
-    #
-    # # Step 8: Testing the model
-    # test_accuracy_score = reg.score(x_test, y_test)
-    # predicted_proba = reg.predict_proba(x_test)
-    # print(test_accuracy_score)
-    # print(predicted_proba)
-
-    # step 9: Save the model: to pickle or json_file
-    # with open('absenteeism_model', 'wb') as file:
-    #     pickle.dump(reg, file)
-    # with open('absenteeism_scaler', 'wb') as file:
-    #     pickle.dump(absenteeism_scaler, file)
-
-    # with open('absenteeism_scaler', 'rb') as scaler_file:
-    #     joy = pickle.load(scaler_file)
-
-
+    k = model.predicted_outputs()
 
     print("\n --- total time to process %s seconds ---" % (time.time() - start_time))
