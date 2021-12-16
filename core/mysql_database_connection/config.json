@@ -1,0 +1,11 @@
+{
+    "mysql": {
+        "host": "localhost",
+        "port": 3308,
+        "user": "banhxeo",
+        "password": "rEi2019Wa-05VtJ$p",
+        "database": "v4",
+        "stg_password": "kerberos1221",
+        "prod_password": "ek7F7ck3"
+    }
+}
