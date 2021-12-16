@@ -76,11 +76,9 @@ if __name__ == "__main__":
     data_file_name = '/Users/phamhanh/Documents/Joy đi học/udemy_python_sql_tableau/dataset/Absenteeism_data.csv'
     new_data_file_name = '/Users/phamhanh/PycharmProjects/data_operation/joy_di_hoc/udemy_intergrating_python_sql_tableau/Absenteeism_new_data.csv'
     columns_to_remove = ['id', 'absenteeism_time_in_hours', 'date', 'reason_for_absence']
-
     model = absenteeism_model(
         model_file='/Users/phamhanh/PycharmProjects/data_operation/joy_di_hoc/udemy_intergrating_python_sql_tableau/absenteeism_model',
         scaler_file='/Users/phamhanh/PycharmProjects/data_operation/joy_di_hoc/udemy_intergrating_python_sql_tableau/absenteeism_scaler')
     model.load_and_clean_data(data_file=data_file_name)
     k = model.predicted_outputs()
-
     print("\n --- total time to process %s seconds ---" % (time.time() - start_time))
