@@ -1,11 +1,6 @@
-import pandas as pd
 import time
-import re
-from joy_di_hoc.udemy_intergrating_python_sql_tableau.data_scaling import *
-from joy_di_hoc.udemy_intergrating_python_sql_tableau.data_cleansing import re_format_file, read_data
-from sklearn.model_selection import train_test_split
-from sklearn.linear_model import LogisticRegression
-from sklearn import metrics
+from joy_di_hoc.data_scaling import *
+from joy_di_hoc.data_cleansing import re_format_file, read_data
 import pickle
 
 
@@ -46,7 +41,7 @@ class absenteeism_model():
 
         # Step 5: data scaling
         scale_columns = [x for x in self.features.columns.values if x not in columns_to_remove]
-        absenteeism_scaler = CustomScaler(columns=scale_columns, copy=True, with_mean=True, with_std=True)
+        absenteeism_scaler = Standardization(columns=scale_columns, copy=True, with_mean=True, with_std=True)
         absenteeism_scaler.fit(X=self.features, y=None)
         self.data = absenteeism_scaler.transform(self.features)
 

@@ -2,15 +2,6 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import time
-from sklearn.cluster import KMeans
-import statsmodels.api as sm
-from statsmodels.graphics.tsaplots import plot_acf
-from statsmodels.graphics.tsaplots import plot_pacf
-from statsmodels.tsa.stattools import adfuller
-from statsmodels.tsa.seasonal import seasonal_decompose
-from statsmodels.tsa.ar_model import AR
-from statsmodels.tsa.arima_model import ARMA, ARIMA
-from joy_di_hoc.VEF.practice_day1 import prepare_data
 
 if __name__ == "__main__":
     start_time = time.time()

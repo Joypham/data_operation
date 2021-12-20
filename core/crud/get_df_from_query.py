@@ -1,6 +1,4 @@
 import pandas as pd
-
-
 def get_df_from_query(query):
     column_name = query.column_descriptions
     list_column_name = []
