@@ -1,7 +1,7 @@
 import time
 import pandas as pd
-from Data_lake_process.crawlingtask import sheet_type
-from Data_lake_process.data_lake_standard import process_image
+from Data_process.crawlingtask import sheet_type
+from Data_process.data_lake_standard import process_image
 
 
 class page_types:

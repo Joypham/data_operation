@@ -1,6 +1,6 @@
-from Data_lake_process.class_definition import WhenExist, PageType, SheetNames, merge_file, DataReports, \
+from Data_process.class_definition import WhenExist, PageType, SheetNames, merge_file, DataReports, \
     get_key_value_from_gsheet_info, add_key_value_from_gsheet_info, get_gsheet_id_from_url
-from Data_lake_process.youtube_similarity import similarity
+from Data_process.youtube_similarity import similarity
 from core.models.data_source_format_master import DataSourceFormatMaster
 
 from core.models.crawlingtask_action_master import V4CrawlingTaskActionMaster

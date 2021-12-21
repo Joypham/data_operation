@@ -301,6 +301,7 @@ if __name__ == "__main__":
     # Step 1: feature_selection
     # logreg = linear_regression_ols_logit(linear_regression=False, df=df_train, dependent_variable='churn', p_value=0.05)
     # pred_proba = logreg.predict(df_test)
+
     # # Set threshold to predict
     # pred_label = (pred_proba > 0.5).astype('int')
     # test_result = pd.concat([df_test, pred_label], axis=1)

@@ -2,7 +2,7 @@ import time
 import pandas as pd
 from google_spreadsheet_api.function import get_df_from_speadsheet, get_gsheet_name, update_value
 
-from Data_lake_process.crawlingtask import crawl_itunes_album
+from Data_process.crawlingtask import crawl_itunes_album
 from core import query_path
 
 if __name__ == "__main__":

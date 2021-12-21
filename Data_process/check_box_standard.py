@@ -1,12 +1,12 @@
 from google_spreadsheet_api.function import get_df_from_speadsheet, get_list_of_sheet_title, update_value, \
     creat_new_sheet_and_update_data_from_df, get_gsheet_name
-from Data_lake_process.data_lake_standard import get_gsheet_id_from_url
+from Data_process.data_lake_standard import get_gsheet_id_from_url
 from crawl_itune.functions import get_max_ratio, check_validate_itune, get_itune_id_region_from_itune_url
 
 import pandas as pd
 import time
 from colorama import Fore, Style
-from Data_lake_process.data_lake_standard import update_data_reports
+from Data_process.data_lake_standard import update_data_reports
 
 
 # S_11 = {"sheet_name": "S_11",

@@ -1,6 +1,6 @@
 from google_spreadsheet_api.function import get_df_from_speadsheet, get_list_of_sheet_title, update_value, \
     creat_new_sheet_and_update_data_from_df, get_gsheet_name
-from Data_lake_process.class_definition import get_key_value_from_gsheet_info, add_key_value_from_gsheet_info, get_gsheet_id_from_url
+from Data_process.class_definition import get_key_value_from_gsheet_info, add_key_value_from_gsheet_info, get_gsheet_id_from_url
 from datetime import datetime
 
 

@@ -1,7 +1,7 @@
 from google_spreadsheet_api.function import get_df_from_speadsheet, get_list_of_sheet_title, update_value, \
     creat_new_sheet_and_update_data_from_df, get_gsheet_name
 from google_spreadsheet_api.create_new_sheet_and_update_data_from_df import creat_new_sheet_and_update_data_from_df
-from Data_lake_process.class_definition import WhenExist, SheetNameType, DataReports, PageType
+from Data_process.class_definition import WhenExist, SheetNameType, DataReports, PageType
 
 from core.crud.get_df_from_query import get_df_from_query
 
@@ -10,8 +10,8 @@ import time
 from colorama import Fore, Style
 from core import query_path
 from core.crud.sql.query_supporter import count_datasource_by_artistname_formatid, get_datasource_by_artistname_formatid
-from Data_lake_process.data_lake_standard import update_data_reports, process_image, crawl_image_datalake, checking_image_crawler_status
-from Data_lake_process.youtube_similarity import similarity
+from Data_process.data_lake_standard import update_data_reports, process_image, crawl_image_datalake, checking_image_crawler_status
+from Data_process.youtube_similarity import similarity
 
 
 def check_youtube_url_mp3(gsheet_id: str):
