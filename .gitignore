@@ -1,5 +1,4 @@
 .idea
-requirements.txt
 sources/token.pickle
 sources/credentials.json
 core/mysql_database_connection/config.json
